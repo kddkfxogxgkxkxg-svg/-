@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الاختبار الإلكتروني</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #11131d;
+  color: #ffffff;
+  font-family: Tahoma, Arial, sans-serif;
+  line-height: 1.8;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+}
+
+.card {
+  background: #1d202b;
+  border: 1px solid #373b4c;
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+h1, h2 {
+  margin-top: 0;
+}
+
+h1 {
+  color: #8993ff;
+  text-align: center;
+}
+
+p {
+  color: #c6c9d5;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  background: #11131d;
+  color: white;
+  border: 1px solid #41465a;
+  border-radius: 9px;
+  font-size: 16px;
+}
+
+.question {
+  padding: 16px 0;
+  border-bottom: 1px solid #373b4c;
+}
+
+.question:last-child {
+  border-bottom: none;
+}
+
+.options {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.options label {
+  flex: 1;
+  background: #292d3b;
+  border: 1px solid #41465a;
+  border-radius: 9px;
+  padding: 10px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.options input {
+  accent-color: #8993ff;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #727fff;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #5968f0;
+}
+
+#result {
+  display: none;
+  margin-top: 18px;
+  padding: 18px;
+  background: #1d202b;
+  border: 1px solid #727fff;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.small {
+  font-size: 13px;
+  color: #aeb4c7;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <section class="card">
+    <h1>الاختبار الإلكتروني</h1>
+    <p style="text-align:center">
+      يرجى تعبئة البيانات والإجابة عن جميع الأسئلة.
+    </p>
+  </section>
+
+  <form id="quizForm">
+
+    <section class="card">
+      <h2>بيانات المتقدم</h2>
+
+      <label for="gameUser">يوزرك باللعبة</label>
+      <input id="gameUser" name="gameUser"
+             type="text" required maxlength="80">
+
+      <label for="realName">اسمك الحقيقي</label>
+      <input id="realName" name="realName"
+             type="text" required maxlength="100">
+
+      <label for="age">عمرك الحقيقي</label>
+      <input id="age" name="age" type="number"
+             min="1" max="120" required>
+
+      <label for="discordUser">يوزرك في الديسكورد</label>
+      <input id="discordUser" name="discordUser"
+             type="text" required maxlength="100">
+
+      <p>(بالتوفيق ❤️)</p>
+    </section>
+
+    <section class="card">
+      <h2>أسئلة الاختبار</h2>
+      <div id="questions"></div>
+    </section>
+
+    <button type="submit">إرسال الإجابات</button>
+
+    <div id="result" role="status"></div>
+
+  </form>
+
+  <p class="small">
+    ملاحظة: إرسال النتائج إلى ديسكورد يحتاج ربط الموقع
+    بخادم وبوت آمن.
+  </p>
+
+</div>
+
+<script>
+const questions = [
+  "هل يسمح لك قتل مسعف؟",
+  "هل يسمح لك إهانة الجثة؟",
+  "هل يسمح لك الاعتداء على البت (المدني)؟",
+  "هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
+  "لو شخص قيدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
+  "إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
+  "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (انتحال صفة)؟",
+  "في حال كنت في فايت وواجهت ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
+  "هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
+  "هل يسمح لك الكذب داخل الرول؟",
+  "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
+];
+
+// الإجابات الحالية افتراضية.
+// غيّرها إلى true إذا كانت الإجابة الصحيحة "صح".
+const correctAnswers = [
+  false, false, false, false, false,
+  false, false, false, false, false, false
+];
+
+const questionsContainer = document.getElementById("questions");
+
+questions.forEach((question, index) => {
+  const number = index + 2;
+
+  const div = document.createElement("div");
+  div.className = "question";
+
+  const title = document.createElement("strong");
+  title.textContent = `السؤال ${number}: ${question}`;
+  div.appendChild(title);
+
+  const options = document.createElement("div");
+  options.className = "options";
+
+  [
+    { text: "صح", value: "true" },
+    { text: "خطأ", value: "false" }
+  ].forEach(option => {
+    const label = document.createElement("label");
+    const radio = document.createElement("input");
+
+    radio.type = "radio";
+    radio.name = `q${number}`;
+    radio.value = option.value;
+    radio.required = true;
+
+    label.appendChild(radio);
+    label.appendChild(document.createTextNode(" " + option.text));
+    options.appendChild(label);
+  });
+
+  div.appendChild(options);
+  questionsContainer.appendChild(div);
+});
+
+document.getElementById("quizForm").addEventListener(
+  "submit",
+  function(event) {
+    event.preventDefault();
+
+    if (!this.reportValidity()) return;
+
+    const formData = new FormData(this);
+    let score = 0;
+    const answers = [];
+
+    questions.forEach((question, index) => {
+      const number = index + 2;
+      const answer = formData.get(`q${number}`) === "true";
+      const isCorrect = answer === correctAnswers[index];
+
+      if (isCorrect) score++;
+
+      answers.push({
+        number,
+        question,
+        answer: answer ? "صح" : "خطأ",
+        correct: isCorrect
+      });
+    });
+
+    const submission = {
+      gameUser: formData.get("gameUser"),
+      realName: formData.get("realName"),
+      age: formData.get("age"),
+      discordUser: formData.get("discordUser"),
+      answers,
+      score,
+      total: questions.length,
+      submittedAt: new Date().toISOString()
+    };
+
+    const result = document.getElementById("result");
+    result.style.display = "block";
+    result.textContent =
+      `تم إنهاء الاختبار! نتيجتك ${score} من ${questions.length}. ` +
+      "هذه معاينة محلية؛ لم تُرسل النتيجة إلى ديسكورد.";
+
+    console.log("بيانات الاختبار:", submission);
+
+    result.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+);
+</script>
+</body>
+</html>
