@@ -3,77 +3,446 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الاختبار الإلكتروني</title>
+<title>Elite City - الاختبار الإلكتروني</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#111326;color:#f5f6ff;font-family:Tahoma,Arial,sans-serif;line-height:1.8}
-main{width:min(760px,92%);margin:30px auto}
-header,.card{background:#1b1e29;border:1px solid #34394b;border-radius:16px;padding:22px;margin-bottom:16px}
-header{border-top:4px solid #6b78ff}
-h1{margin-top:0}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#67c3eb;
+  --primary-dark:#3a9bc7;
+  --bg-dark:#0b0e14;
+  --card-bg:#131722;
+  --border-color:#262d3d;
+  --text-main:#f4f8fb;
+  --text-muted:#9aa6b8;
+  --discord-blue:#5865F2;
+  --x-black:#000000;
+}
+body{
+  background:var(--bg-dark);
+  color:var(--text-main);
+  font-family:Tahoma,Arial,sans-serif;
+  line-height:1.8;
+  min-height:100vh;
+}
+
+/* أنيميشن النبض بنفس لون الشعار */
+@keyframes pulseLogo{
+  0%{
+    transform:scale(1);
+    filter:drop-shadow(0 0 8px rgba(103, 195, 235, 0.35));
+  }
+  50%{
+    transform:scale(1.07);
+    filter:drop-shadow(0 0 22px rgba(103, 195, 235, 0.85));
+  }
+  100%{
+    transform:scale(1);
+    filter:drop-shadow(0 0 8px rgba(103, 195, 235, 0.35));
+  }
+}
+
+.pulsing-logo{
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  object-fit:cover;
+  animation:pulseLogo 2.2s infinite ease-in-out;
+  border:2px solid var(--primary);
+}
+
+.small-pulse{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  animation:pulseLogo 2.2s infinite ease-in-out;
+  border:1.5px solid var(--primary);
+}
+
+/* الشريط العلوي (يمين: القائمة | وسط: Elite City | يسار: الشعار) */
+header.navbar{
+  position:sticky;
+  top:0;
+  background:rgba(19, 23, 34, 0.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-color);
+  padding:12px 20px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  z-index:1000;
+}
+
+.nav-right{
+  display:flex;
+  justify-content:flex-start;
+}
+
+.nav-center{
+  text-align:center;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:1px;
+  background:linear-gradient(90deg, #ffffff, var(--primary), #ffffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 18px rgba(103, 195, 235, 0.3);
+}
+
+.nav-left{
+  display:flex;
+  justify-content:flex-end;
+}
+
+.menu-btn{
+  background:rgba(103, 195, 235, 0.1);
+  border:1px solid var(--border-color);
+  border-radius:10px;
+  color:var(--primary);
+  font-size:24px;
+  cursor:pointer;
+  width:42px;
+  height:42px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  transition:0.25s;
+}
+.menu-btn:hover{
+  background:rgba(103, 195, 235, 0.2);
+}
+
+/* القائمة المنسدلة على اليمين */
+.dropdown-menu{
+  display:none;
+  position:fixed;
+  top:68px;
+  right:20px;
+  background:var(--card-bg);
+  border:1px solid var(--border-color);
+  border-radius:16px;
+  padding:8px;
+  width:230px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.65);
+  z-index:1001;
+  animation:fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(-8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.dropdown-menu.show{display:block;}
+
+.menu-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 15px;
+  color:var(--text-main);
+  text-decoration:none;
+  border-bottom:1px solid var(--border-color);
+  font-weight:bold;
+  font-size:15px;
+  transition:0.2s;
+  border-radius:10px;
+}
+.menu-item:last-child{border-bottom:none;}
+.menu-item:hover{
+  background:rgba(103, 195, 235, 0.12);
+  color:var(--primary);
+}
+
+/* الصفحات */
+.page-view{
+  display:none;
+  padding:35px 20px;
+  min-height:calc(100vh - 68px);
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.page-view.active{display:flex;}
+
+/* الصفحة الرئيسية الترحيبية */
+.welcome-container{
+  max-width:480px;
+  width:100%;
+  text-align:center;
+  background:var(--card-bg);
+  border:1px solid var(--border-color);
+  border-top:3px solid var(--primary);
+  border-radius:22px;
+  padding:36px 24px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.45);
+}
+
+.welcome-title{
+  font-size:32px;
+  margin:18px 0 8px;
+  color:var(--primary);
+}
+
+.welcome-desc{
+  color:var(--text-muted);
+  margin-bottom:28px;
+  font-size:16px;
+}
+
+.buttons-layout{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  width:100%;
+}
+
+.social-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.btn-main{
+  padding:15px 14px;
+  border-radius:12px;
+  border:none;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.25s;
+  text-decoration:none;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+}
+
+/* زر ابدأ الاختبار باللون الأزرق */
+.btn-start{
+  background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color:#07131a;
+  font-size:17px;
+  box-shadow:0 4px 15px rgba(103, 195, 235, 0.3);
+}
+.btn-start:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(103, 195, 235, 0.5);
+}
+
+/* زر سيرفرنا ديسكورد على اليمين باللون الأزرق */
+.btn-discord{
+  background:var(--discord-blue);
+  color:#ffffff;
+}
+.btn-discord:hover{
+  background:#4752c4;
+  transform:translateY(-2px);
+}
+
+/* زر حسابنا X على اليسار باللون الأسود */
+.btn-x{
+  background:var(--x-black);
+  color:#ffffff;
+  border:1px solid #333a4a;
+}
+.btn-x:hover{
+  background:#16181c;
+  transform:translateY(-2px);
+}
+
+/* صفحة الاختبار */
+main.quiz-main{width:min(760px,100%);margin:10px auto}
+header.quiz-header,.card{
+  background:var(--card-bg);
+  border:1px solid var(--border-color);
+  border-radius:16px;
+  padding:22px;
+  margin-bottom:16px;
+  text-align:right;
+}
+header.quiz-header{border-top:4px solid var(--primary)}
 label{display:block;margin:12px 0 5px;font-weight:bold}
 input{max-width:100%;font:inherit}
-input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid #34394b;border-radius:9px;background:#11141e;color:white}
-.hint{color:#b7bdd0;font-size:13px;margin-top:4px;display:block}
-.question{background:#151824;border:1px solid #34394b;border-radius:12px;padding:16px;margin:12px 0}
+input[type="text"],input[type="number"]{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border-color);
+  border-radius:9px;
+  background:#0b0e14;
+  color:white;
+}
+input[type="text"]:focus,input[type="number"]:focus{
+  outline:none;
+  border-color:var(--primary);
+}
+.hint{color:var(--text-muted);font-size:13px;margin-top:4px;display:block}
+.question{
+  background:#0e121b;
+  border:1px solid var(--border-color);
+  border-radius:12px;
+  padding:16px;
+  margin:12px 0;
+}
 .choices{display:flex;gap:12px;margin-top:10px}
-.choices label{flex:1;display:flex;align-items:center;gap:8px;border:1px solid #34394b;border-radius:9px;padding:10px;cursor:pointer;margin:0}
-button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-radius:10px;font:bold 16px Tahoma;cursor:pointer;transition:0.2s}
-button:disabled{opacity:0.6;cursor:not-allowed}
+.choices label{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--border-color);
+  border-radius:9px;
+  padding:10px;
+  cursor:pointer;
+  margin:0;
+  background:var(--card-bg);
+}
+.choices label:hover{border-color:var(--primary)}
+input[type="radio"]{accent-color:var(--primary)}
 
-#confirmation-view{display:none;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}
-.confirm-card{width:min(520px,100%);background:#1b1e29;border:1px solid #34394b;border-top:4px solid #6b78ff;border-radius:20px;padding:35px 22px}
+button.submit-btn{
+  width:100%;
+  padding:16px;
+  background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color:#07131a;
+  border:0;
+  border-radius:12px;
+  font:bold 18px Tahoma;
+  cursor:pointer;
+  transition:0.25s;
+}
+button.submit-btn:hover{opacity:0.92;transform:translateY(-1px)}
+button.submit-btn:disabled{opacity:0.6;cursor:not-allowed}
+
+/* صفحة التأكيد */
+.confirm-card{
+  width:min(520px,100%);
+  background:var(--card-bg);
+  border:1px solid var(--border-color);
+  border-top:4px solid var(--primary);
+  border-radius:20px;
+  padding:35px 22px;
+  text-align:center;
+}
 .icon{font-size:60px}
-.confirm-card h1{font-size:27px}
-.confirm-card p{font-size:18px;line-height:2}
-.small{color:#b7bdd0;font-size:14px}
-.status-box{margin-top:18px;padding:14px;border-radius:12px;background:#151824;border:1px solid #34394b;font-size:15px}
+.confirm-card h1{font-size:26px;margin:15px 0}
+.confirm-card p{font-size:17px;line-height:1.9}
+.status-box{
+  margin-top:18px;
+  padding:15px;
+  border-radius:12px;
+  background:#0e121b;
+  border:1px solid var(--border-color);
+  font-size:16px;
+  font-weight:bold;
+  color:var(--primary);
+}
 </style>
 </head>
 <body>
 
-<main id="quiz-view">
-<header>
-<h1>الاختبار الإلكتروني</h1>
-<p>أكمل بياناتك وأجب عن جميع الأسئلة.</p>
+<!-- الشريط العلوي -->
+<header class="navbar">
+  <!-- يمين: زر القائمة -->
+  <div class="nav-right">
+    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="القائمة">☰</button>
+  </div>
+
+  <!-- وسط: اسم السيرفر -->
+  <div class="nav-center">Elite City</div>
+
+  <!-- يسار: الشعار الصغير النابض -->
+  <div class="nav-left">
+    <img src="https://i.imgur.com/m1cTbAu.jpeg" alt="Elite City Logo" class="small-pulse" onclick="showPage('welcome-view')" style="cursor:pointer">
+  </div>
 </header>
 
-<form id="quiz">
-<section class="card">
-<h2>البيانات الشخصية</h2>
+<!-- القائمة الصغيرة المنسدلة -->
+<div class="dropdown-menu" id="dropdownMenu">
+  <a href="#" class="menu-item" onclick="showPage('quiz-view'); return false;">
+    <span>ابدأ الاختبار</span>
+    <span>📝</span>
+  </a>
+  <a href="https://x.com/grv7n_?s=11" target="_blank" rel="noopener" class="menu-item">
+    <span>حسابنا في تويتر</span>
+    <span>𝕏</span>
+  </a>
+  <a href="https://discord.gg/ec1" target="_blank" rel="noopener" class="menu-item">
+    <span>سيرفر الديسكورد</span>
+    <span>🎮</span>
+  </a>
+</div>
 
-<label for="gameUser">يوزرك باللعبة</label>
-<input id="gameUser" name="gameUser" type="text" required>
+<!-- الصفحة الأولى: الترحيبية -->
+<section id="welcome-view" class="page-view active">
+  <div class="welcome-container">
+    <img src="https://i.imgur.com/m1cTbAu.jpeg" alt="Elite City Logo" class="pulsing-logo">
+    <h1 class="welcome-title">Elite City</h1>
+    <p class="welcome-desc">أهلاً بك في بوابة الاختبار الإلكتروني، اختر وجهتك من الأسفل.</p>
+    
+    <div class="buttons-layout">
+      <!-- 1. فوق: ابدأ الاختبار الإلكتروني باللون الأزرق -->
+      <button class="btn-main btn-start" onclick="showPage('quiz-view')">
+        📝 ابدأ الاختبار الإلكتروني
+      </button>
 
-<label for="realName">اسمك الحقيقي</label>
-<input id="realName" name="realName" type="text" required>
-
-<label for="age">عمرك الحقيقي</label>
-<input id="age" name="age" type="number" min="1" max="120" required>
-
-<label for="discordUser">يوزرك في الديسكورد (يفضل وضع الـ ID للمнشن)</label>
-<input id="discordUser" name="discordUser" type="text" placeholder="مثال: 123456789012345678" required>
-<span class="hint">إذا كتبت رقم الـ ID سيتم عمل منشن لحسابك مباشرة.</span>
+      <!-- 2. تحت: يمين سيرفرنا ديسكورد (أزرق) | يسار حسابنا X (أسود) -->
+      <div class="social-row">
+        <a href="https://discord.gg/ec1" target="_blank" rel="noopener" class="btn-main btn-discord">
+          🎮 سيرفرنا ديسكورد
+        </a>
+        <a href="https://x.com/grv7n_?s=11" target="_blank" rel="noopener" class="btn-main btn-x">
+          𝕏 حسابنا X
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
 
-<section class="card">
-<h2>أسئلة الاختبار</h2>
-<div id="questions"></div>
+<!-- الصفحة الثانية: فورم الاختبار -->
+<section id="quiz-view" class="page-view">
+  <main class="quiz-main">
+    <header class="quiz-header">
+      <h1>الاختبار الإلكتروني</h1>
+      <p>أكمل بياناتك وأجب عن جميع الأسئلة بدقة.</p>
+    </header>
+
+    <form id="quiz">
+      <section class="card">
+        <h2>البيانات الشخصية</h2>
+
+        <label for="gameUser">يوزرك باللعبة</label>
+        <input id="gameUser" name="gameUser" type="text" required>
+
+        <label for="realName">اسمك الحقيقي</label>
+        <input id="realName" name="realName" type="text" required>
+
+        <label for="age">عمرك الحقيقي</label>
+        <input id="age" name="age" type="number" min="1" max="120" required>
+
+        <label for="discordUser">يوزرك في الديسكورد (ضع الـ ID للمنشن)</label>
+        <input id="discordUser" name="discordUser" type="text" placeholder="مثال: 123456789012345678" required>
+        <span class="hint">عند كتابة رقم الـ ID سيتم عمل منشن لحسابك تلقائياً في الروم.</span>
+      </section>
+
+      <section class="card">
+        <h2>أسئلة الاختبار</h2>
+        <div id="questions"></div>
+      </section>
+
+      <button type="submit" id="submitBtn" class="submit-btn">إرسال الإجابات</button>
+    </form>
+  </main>
 </section>
 
-<button type="submit" id="submitBtn">إرسال الإجابات</button>
-</form>
-</main>
-
-<div id="confirmation-view">
-<div class="confirm-card">
-<div class="icon" id="confirm-icon">✅</div>
-<h1 id="confirm-title">تم إرسال اختبارك إلى الإدارة</h1>
-<p id="confirm-message">يرجى الانتظار حتى يتم الرد عليك من الإدارة.</p>
-<div class="status-box" id="result-summary"></div>
-<p class="small">شكرًا لك على إكمال الاختبار ❤️</p>
-</div>
-</div>
+<!-- الصفحة الثالثة: شاشة التأكيد -->
+<section id="confirmation-view" class="page-view">
+  <div class="confirm-card">
+    <div class="icon" id="confirm-icon">✅</div>
+    <h1 id="confirm-title">تم إرسال اختبارك إلى الإدارة</h1>
+    <p id="confirm-message">يرجى الانتظار حتى يتم الرد عليك من الإدارة.</p>
+    <div class="status-box" id="result-summary"></div>
+    <p style="color:var(--text-muted);font-size:14px;margin-top:20px">شكرًا لك على إكمال الاختبار ❤️</p>
+  </div>
+</section>
 
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1573817844888506579/GEnIMN4yOgd1lu4bfcCJQRfKha0D4p8Y5HiJgL9qJIpyiVOvXiqkng9jDw2ILeebs-fu";
@@ -92,16 +461,39 @@ const quizData = [
   { question: "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟", correct: "خطأ" }
 ];
 
-const root = document.getElementById("questions");
+function showPage(pageId) {
+  document.querySelectorAll('.page-view').forEach(page => page.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  closeMenu();
+  window.scrollTo(0, 0);
+}
 
+function toggleMenu() {
+  const menu = document.getElementById('dropdownMenu');
+  const btn = document.getElementById('menuBtn');
+  menu.classList.toggle('show');
+  btn.textContent = menu.classList.contains('show') ? '✕' : '☰';
+}
+
+function closeMenu() {
+  document.getElementById('dropdownMenu').classList.remove('show');
+  document.getElementById('menuBtn').textContent = '☰';
+}
+
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('dropdownMenu');
+  const btn = document.getElementById('menuBtn');
+  if (!menu.contains(event.target) && !btn.contains(event.target)) {
+    closeMenu();
+  }
+});
+
+const root = document.getElementById("questions");
 quizData.forEach((item, index) => {
   const number = index + 1;
   const div = document.createElement("div");
   div.className = "question";
-
-  const title = document.createElement("strong");
-  title.textContent = `السؤال ${number}: ${item.question}`;
-  div.appendChild(title);
+  div.innerHTML = `<strong>السؤال ${number}: ${item.question}</strong>`;
 
   const choices = document.createElement("div");
   choices.className = "choices";
@@ -113,12 +505,10 @@ quizData.forEach((item, index) => {
     radio.name = `q${number}`;
     radio.value = answer;
     radio.required = true;
-
     label.appendChild(radio);
     label.appendChild(document.createTextNode(answer));
     choices.appendChild(label);
   });
-
   div.appendChild(choices);
   root.appendChild(div);
 });
@@ -127,17 +517,9 @@ function formatDiscordMention(input) {
   const trimmed = (input || "").trim();
   const idMatch = trimmed.match(/\d{17,20}/);
   if (idMatch) {
-    return {
-      mention: `<@${idMatch[0]}>`,
-      raw: trimmed,
-      userId: idMatch[0]
-    };
+    return { mention: `<@${idMatch[0]}>`, raw: trimmed, userId: idMatch[0] };
   }
-  return {
-    mention: trimmed,
-    raw: trimmed,
-    userId: null
-  };
+  return { mention: trimmed, raw: trimmed, userId: null };
 }
 
 document.getElementById("quiz").addEventListener("submit", async function(event) {
@@ -157,13 +539,13 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
 
   let score = 0;
   const totalQuestions = quizData.length;
-
   let answersText = "";
+
   quizData.forEach((item, index) => {
     const userAnswer = formData.get(`q${index + 1}`);
     const isCorrect = userAnswer === item.correct;
     if (isCorrect) score++;
-    answersText += `س${index+1}: ${userAnswer} ${isCorrect ? "✅" : "❌"}\n`;
+    answersText += `س${index + 1}: ${userAnswer} ${isCorrect ? "✅" : "❌"}\n`;
   });
 
   const isAccepted = score === totalQuestions;
@@ -172,7 +554,7 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
   const fields = [
     { 
       name: "📋 معلومات المتقدم", 
-      value: `**اللعبة:** ${gameUser} | **الاسم:** ${realName}\n**العمر:** ${age} | **الديسكورد:** ${discordInfo.mention}`, 
+      value: `**اللعبة:** ${gameUser} | **الاسم:** ${realName} | **العمر:** ${age} | **الديسكورد:** ${discordInfo.mention}`, 
       inline: false 
     },
     { 
@@ -189,15 +571,13 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
 
   const payload = {
     content: discordInfo.userId ? `<@${discordInfo.userId}>` : "",
-    username: "نظام الاختبارات",
-    embeds: [
-      {
-        title: "📋 نموذج اختبار إلكتروني جديد",
-        color: isAccepted ? 3066993 : 15158332,
-        fields: fields,
-        timestamp: new Date().toISOString()
-      }
-    ]
+    username: "نظام الاختبارات - Elite City",
+    embeds: [{
+      title: "📋 نموذج اختبار إلكتروني جديد",
+      color: isAccepted ? 3066993 : 15158332,
+      fields: fields,
+      timestamp: new Date().toISOString()
+    }]
   };
 
   try {
@@ -209,20 +589,15 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
 
     if (!response.ok) throw new Error("فشل الإرسال");
 
-    document.getElementById("quiz-view").style.display = "none";
-    const confirmView = document.getElementById("confirmation-view");
-    confirmView.style.display = "flex";
-
+    showPage('confirmation-view');
     document.getElementById("confirm-icon").textContent = isAccepted ? "🎉" : "❌";
     document.getElementById("confirm-title").textContent = isAccepted ? "مبروك! تم قبولك" : "نعتذر، لم يتم قبولك";
     document.getElementById("confirm-message").textContent = isAccepted 
       ? "تم التحقق من إجاباتك وإرسال النتيجة للإدارة." 
       : "لم تستوفِ الدرجة المطلوبة كاملة.";
     document.getElementById("result-summary").textContent = `نتيجتك: ${score} من ${totalQuestions}`;
-
-    window.scrollTo(0, 赢`);
   } catch (error) {
-    alert("حدث خطأ أثناء الإرسال.");
+    alert("حدث خطأ أثناء الإرسال، تأكد من اتصال الإنترنت وحاول مرة أخرى.");
     btn.disabled = false;
     btn.textContent = "إرسال الإجابات";
   }
