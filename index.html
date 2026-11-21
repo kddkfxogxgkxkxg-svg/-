@@ -1,286 +1,131 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الاختبار الإلكتروني</title>
-
 <style>
-:root {
-  --bg: #10121a;
-  --panel: #1b1e29;
-  --line: #34394b;
-  --accent: #6b78ff;
-  --text: #f5f6ff;
-  --muted: #b7bdd0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: linear-gradient(145deg, #111326, #171b2b);
-  color: var(--text);
-  font-family: Tahoma, Arial, sans-serif;
-  line-height: 1.8;
-}
-
-main {
-  width: min(760px, 92%);
-  margin: 32px auto 60px;
-}
-
-.hero, .card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 16px;
-}
-
-.hero {
-  border-top: 4px solid var(--accent);
-}
-
-h1 {
-  font-size: 1.65rem;
-  margin: 0 0 8px;
-}
-
-h2 {
-  font-size: 1.1rem;
-  margin: 0 0 12px;
-}
-
-.muted {
-  color: var(--muted);
-  margin: 0;
-}
-
-label {
-  display: block;
-  margin: 12px 0 5px;
-  font-weight: 700;
-}
-
-input {
-  width: 100%;
-  padding: 12px 13px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: #11141e;
-  color: var(--text);
-  font: inherit;
-}
-
-.question {
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  margin: 12px 0;
-  background: #151824;
-}
-
-.choices {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.choices label {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.choices input {
-  width: auto;
-  accent-color: var(--accent);
-}
-
-button {
-  width: 100%;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px;
-  background: var(--accent);
-  color: white;
-  font: 700 1rem Tahoma, Arial, sans-serif;
-  cursor: pointer;
-}
-
-.small {
-  font-size: 0.88rem;
-  color: var(--muted);
-}
-
-#confirmation {
-  display: none;
-  text-align: center;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-top: 4px solid var(--accent);
-  border-radius: 18px;
-  padding: 28px 22px;
-  margin-top: 20px;
-}
-
-#confirmation h1 {
-  margin-bottom: 12px;
-}
-
-#confirmation p {
-  margin: 8px 0;
-}
-
-.success-icon {
-  font-size: 55px;
-  margin-bottom: 10px;
-}
+*{box-sizing:border-box}
+body{margin:0;background:#111326;color:#f5f6ff;font-family:Tahoma,Arial,sans-serif;line-height:1.8}
+main{width:min(760px,92%);margin:30px auto}
+header,.card{background:#1b1e29;border:1px solid #34394b;border-radius:16px;padding:22px;margin-bottom:16px}
+header{border-top:4px solid #6b78ff}
+h1{margin-top:0}
+label{display:block;margin:12px 0 5px;font-weight:bold}
+input{max-width:100%;font:inherit}
+input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid #34394b;border-radius:9px;background:#11141e;color:white}
+.question{background:#151824;border:1px solid #34394b;border-radius:12px;padding:16px;margin:12px 0}
+.choices{display:flex;gap:12px;margin-top:10px}
+.choices label{flex:1;display:flex;align-items:center;gap:8px;border:1px solid #34394b;border-radius:9px;padding:10px;cursor:pointer;margin:0}
+button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-radius:10px;font:bold 16px Tahoma;cursor:pointer}
 </style>
 </head>
-
 <body>
-
 <main>
+<header>
+<h1>الاختبار الإلكتروني</h1>
+<p>أكمل بياناتك وأجب عن جميع الأسئلة.</p>
+</header>
 
-  <header class="hero">
-    <h1>الاختبار الإلكتروني</h1>
-    <p class="muted">أكمل بياناتك ثم أجب عن جميع الأسئلة.</p>
-  </header>
+<form id="quiz">
+<section class="card">
+<h2>البيانات الشخصية</h2>
 
-  <section id="confirmation" role="status" aria-live="polite">
-    <div class="success-icon">✅</div>
-    <h1>تم إرسال طلبك</h1>
-    <p>انتظر رد من الإدارة.</p>
-    <p class="small">شكرًا لك على إكمال الاختبار ❤️</p>
-  </section>
+<label for="gameUser">يوزرك باللعبة</label>
+<input id="gameUser" name="gameUser" type="text" required>
 
-  <form id="quiz">
+<label for="realName">اسمك الحقيقي</label>
+<input id="realName" name="realName" type="text" required>
 
-    <section class="card">
-      <h2>البيانات الشخصية</h2>
+<label for="age">عمرك الحقيقي</label>
+<input id="age" name="age" type="number" min="1" max="120" required>
 
-      <label for="gameUser">يوزرك باللعبة</label>
-      <input id="gameUser" name="gameUser" required maxlength="80">
+<label for="discordUser">يوزرك في الديسكورد</label>
+<input id="discordUser" name="discordUser" type="text" required>
+</section>
 
-      <label for="realName">اسمك الحقيقي</label>
-      <input id="realName" name="realName" required maxlength="100">
+<section class="card">
+<h2>أسئلة الاختبار</h2>
+<div id="questions"></div>
+</section>
 
-      <label for="age">عمرك الحقيقي</label>
-      <input id="age" name="age" type="number" min="1" max="120" required>
-
-      <label for="discordUser">يوزرك في الديسكورد</label>
-      <input id="discordUser" name="discordUser" required maxlength="100">
-
-      <p class="small">بالتوفيق ❤️</p>
-    </section>
-
-    <section class="card">
-      <h2>أسئلة الاختبار</h2>
-      <div id="questions"></div>
-    </section>
-
-    <button id="submitBtn" type="submit">إرسال الإجابات</button>
-
-  </form>
-
+<button type="submit">إرسال الإجابات</button>
+</form>
 </main>
 
 <script>
 const questions = [
-  "هل يسمح لك قتل مسعف؟",
-  "هل يسمح لك إهانة الجثة؟",
-  "هل يسمح لك الاعتداء على البت (المدني)؟",
-  "هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
-  "لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
-  "إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
-  "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
-  "في حال كنت في فايت وواجهت ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
-  "هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
-  "هل يسمح لك الكذب داخل الرول؟",
-  "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
+"هل يسمح لك قتل مسعف؟",
+"هل يسمح لك إهانة الجثة؟",
+"هل يسمح لك الاعتداء على البت (المدني)؟",
+"هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
+"لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
+"إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
+"هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
+"في حال كنت في فايت وواجهك ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
+"هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
+"هل يسمح لك الكذب داخل الرول؟",
+"هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
 ];
 
-const questionsRoot = document.getElementById("questions");
+const root = document.getElementById("questions");
 
 questions.forEach((question, index) => {
   const number = index + 2;
-  const item = document.createElement("div");
-
-  item.className = "question";
+  const div = document.createElement("div");
+  div.className = "question";
 
   const title = document.createElement("strong");
   title.textContent = `السؤال ${number}: ${question}`;
-  item.appendChild(title);
+  div.appendChild(title);
 
   const choices = document.createElement("div");
   choices.className = "choices";
 
-  [
-    { value: "true", text: "صح" },
-    { value: "false", text: "خطأ" }
-  ].forEach(choice => {
+  ["صح", "خطأ"].forEach((answer, i) => {
     const label = document.createElement("label");
     const radio = document.createElement("input");
-
     radio.type = "radio";
     radio.name = `q${number}`;
-    radio.value = choice.value;
+    radio.value = answer;
     radio.required = true;
 
     label.appendChild(radio);
-    label.appendChild(document.createTextNode(choice.text));
+    label.appendChild(document.createTextNode(answer));
     choices.appendChild(label);
   });
 
-  item.appendChild(choices);
-  questionsRoot.appendChild(item);
+  div.appendChild(choices);
+  root.appendChild(div);
 });
 
 document.getElementById("quiz").addEventListener("submit", function(event) {
   event.preventDefault();
 
-  if (!this.reportValidity()) {
-    return;
-  }
+  if (!this.reportValidity()) return;
 
   const formData = new FormData(this);
-
   const submission = {
     gameUser: formData.get("gameUser"),
     realName: formData.get("realName"),
     age: formData.get("age"),
     discordUser: formData.get("discordUser"),
     answers: questions.map((question, index) => ({
-      question: question,
-      answer: formData.get(`q${index + 2}`) === "true" ? "صح" : "خطأ"
-    })),
-    submittedAt: new Date().toISOString()
+      question,
+      answer: formData.get(`q${index + 2}`)
+    }))
   };
 
-  // عرض بيانات الطلب في وحدة التحكم فقط.
-  // يلزم ربط خادم أو بوت ديسكورد لإرسال الطلب فعليًا للإدارة.
-  console.log("Quiz submission:", submission);
+  try {
+    sessionStorage.setItem("quizSubmission", JSON.stringify(submission));
+  } catch (error) {
+    alert("تعذر تجهيز الطلب. يرجى المحاولة مرة أخرى.");
+    return;
+  }
 
-  document.getElementById("quiz").style.display = "none";
-  document.querySelector(".hero").style.display = "none";
-  document.getElementById("confirmation").style.display = "block";
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.location.href = "confirmation.html";
 });
 </script>
-
 </body>
 </html>
