@@ -14,6 +14,7 @@ h1{margin-top:0}
 label{display:block;margin:12px 0 5px;font-weight:bold}
 input{max-width:100%;font:inherit}
 input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid #34394b;border-radius:9px;background:#11141e;color:white}
+.hint{color:#b7bdd0;font-size:13px;margin-top:4px;display:block}
 .question{background:#151824;border:1px solid #34394b;border-radius:12px;padding:16px;margin:12px 0}
 .choices{display:flex;gap:12px;margin-top:10px}
 .choices label{flex:1;display:flex;align-items:center;gap:8px;border:1px solid #34394b;border-radius:9px;padding:10px;cursor:pointer;margin:0}
@@ -22,11 +23,12 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 
 /* تنسيقات صفحة التأكيد المدمجة */
 #confirmation-view{display:none;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}
-.confirm-card{width:min(500px,100%);background:#1b1e29;border:1px solid #34394b;border-top:4px solid #6b78ff;border-radius:20px;padding:35px 22px}
+.confirm-card{width:min(520px,100%);background:#1b1e29;border:1px solid #34394b;border-top:4px solid #6b78ff;border-radius:20px;padding:35px 22px}
 .icon{font-size:60px}
 .confirm-card h1{font-size:27px}
 .confirm-card p{font-size:18px;line-height:2}
 .small{color:#b7bdd0;font-size:14px}
+.status-box{margin-top:18px;padding:14px;border-radius:12px;background:#151824;border:1px solid #34394b;font-size:15px}
 </style>
 </head>
 <body>
@@ -51,8 +53,9 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 <label for="age">عمرك الحقيقي</label>
 <input id="age" name="age" type="number" min="1" max="120" required>
 
-<label for="discordUser">يوزرك في الديسكورد</label>
-<input id="discordUser" name="discordUser" type="text" required>
+<label for="discordUser">يوزرك في الديسكورد (يفضل وضع الـ ID للمنشن)</label>
+<input id="discordUser" name="discordUser" type="text" placeholder="مثال: 123456789012345678" required>
+<span class="hint">إذا كتبت رقم الـ ID الخاص بحسابك في ديسكورد سيتم عمل منشن لك مباشرة.</span>
 </section>
 
 <section class="card">
@@ -67,9 +70,10 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 <!-- الصفحة الثانية: شاشة التأكيد -->
 <div id="confirmation-view">
 <div class="confirm-card">
-<div class="icon">✅</div>
-<h1>تم إرسال اختبارك إلى الإدارة</h1>
-<p>يرجى الانتظار حتى يتم الرد عليك من الإدارة.</p>
+<div class="icon" id="confirm-icon">✅</div>
+<h1 id="confirm-title">تم إرسال اختبارك إلى الإدارة</h1>
+<p id="confirm-message">يرجى الانتظار حتى يتم الرد عليك من الإدارة.</p>
+<div class="status-box" id="result-summary"></div>
 <p class="small">شكرًا لك على إكمال الاختبار ❤️</p>
 </div>
 </div>
@@ -77,29 +81,30 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1573817844888506579/GEnIMN4yOgd1lu4bfcCJQRfKha0D4p8Y5HiJgL9qJIpyiVOvXiqkng9jDw2ILeebs-fu";
 
-const questions = [
-  "هل يسمح لك قتل مسعف؟",
-  "هل يسمح لك إهانة الجثة؟",
-  "هل يسمح لك الاعتداء على البت (المدني)؟",
-  "هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
-  "لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
-  "إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
-  "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
-  "في حال كنت في فايت وواجهك ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
-  "هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
-  "هل يسمح لك الكذب داخل الرول؟",
-  "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
+// الأسئلة والإجابة الصحيحة لكل سؤال (يمكنك تعديل الإجابات الصحيحة حسب قواعد سيرفرك)
+const quizData = [
+  { question: "هل يسمح لك قتل مسعف؟", correct: "خطأ" },
+  { question: "هل يسمح لك إهانة الجثة؟", correct: "خطأ" },
+  { question: "هل يسمح لك الاعتداء على البت (المدني)؟", correct: "خطأ" },
+  { question: "هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟", correct: "خطأ" },
+  { question: "لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟", correct: "خطأ" },
+  { question: "إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟", correct: "صح" },
+  { question: "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟", correct: "خطأ" },
+  { question: "في حال كنت في فايت وواجهك ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟", correct: "خطأ" },
+  { question: "هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟", correct: "خطأ" },
+  { question: "هل يسمح لك الكذب داخل الرول؟", correct: "صح" },
+  { question: "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟", correct: "خطأ" }
 ];
 
 const root = document.getElementById("questions");
 
-questions.forEach((question, index) => {
+quizData.forEach((item, index) => {
   const number = index + 1;
   const div = document.createElement("div");
   div.className = "question";
 
   const title = document.createElement("strong");
-  title.textContent = `السؤال ${number}: ${question}`;
+  title.textContent = `السؤال ${number}: ${item.question}`;
   div.appendChild(title);
 
   const choices = document.createElement("div");
@@ -122,6 +127,23 @@ questions.forEach((question, index) => {
   root.appendChild(div);
 });
 
+function formatDiscordMention(input) {
+  const trimmed = (input || "").trim();
+  const idMatch = trimmed.match(/\d{17,20}/);
+  if (idMatch) {
+    return {
+      mention: `<@${idMatch[0]}>`,
+      raw: trimmed,
+      userId: idMatch[0]
+    };
+  }
+  return {
+    mention: trimmed,
+    raw: trimmed,
+    userId: null
+  };
+}
+
 document.getElementById("quiz").addEventListener("submit", async function(event) {
   event.preventDefault();
   if (!this.reportValidity()) return;
@@ -131,33 +153,56 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
   btn.textContent = "جاري الإرسال...";
 
   const formData = new FormData(this);
-  const gameUser = formData.get("gameUser");
-  const realName = formData.get("realName");
-  const age = formData.get("age");
-  const discordUser = formData.get("discordUser");
+  const gameUser = formData.get("gameUser").trim();
+  const realName = formData.get("realName").trim();
+  const age = formData.get("age").trim();
+  const discordInput = formData.get("discordUser").trim();
+  const discordInfo = formatDiscordMention(discordInput);
+
+  let score = 0;
+  const totalQuestions = quizData.length;
 
   const fields = [
-    { name: "🎮 يوزر اللعبة", value: gameUser, inline: true },
     { name: "👤 الاسم الحقيقي", value: realName, inline: true },
+    { name: "🎮 يوزر اللعبة", value: gameUser, inline: true },
     { name: "🎂 العمر", value: age, inline: true },
-    { name: "💬 يوزر الديسكورد", value: discordUser, inline: false }
+    { name: "💬 يوزر الديسكورد", value: discordInfo.mention, inline: false }
   ];
 
-  questions.forEach((question, index) => {
-    const ans = formData.get(`q${index + 1}`);
+  quizData.forEach((item, index) => {
+    const userAnswer = formData.get(`q${index + 1}`);
+    const isCorrect = userAnswer === item.correct;
+    if (isCorrect) score++;
+
     fields.push({
-      name: `س${index + 1}: ${question}`,
-      value: `**الإجابة:** ${ans}`,
+      name: `س${index + 1}: ${item.question}`,
+      value: `**الإجابة:** ${userAnswer} ${isCorrect ? "✅" : "❌"}`,
       inline: false
     });
   });
 
+  const isAccepted = score === totalQuestions;
+  const statusText = isAccepted
+    ? "🟢 مقبول تلقائياً (الدرجة كاملة 11/11)"
+    : `🔴 مرفوض تلقائياً (الدرجة ${score}/${totalQuestions})`;
+
+  const dmDecisionMessage = isAccepted
+    ? `مبروك ${discordInfo.mention}، تم قبولك في الاختبار بنجاح (${score}/${totalQuestions}).`
+    : `نعتذر ${discordInfo.mention}، لم يتم قبولك في الاختبار (${score}/${totalQuestions}). يمكنك المحاولة مرة أخرى لاحقاً.`;
+
+  fields.push(
+    { name: "📊 النتيجة", value: `**${score} / ${totalQuestions}**`, inline: true },
+    { name: "📌 حالة التقديم", value: statusText, inline: true },
+    { name: "✉️ رسالة الخاص التلقائية", value: dmDecisionMessage, inline: false }
+  );
+
   const payload = {
+    content: discordInfo.userId ? `<@${discordInfo.userId}>` : "",
     username: "نظام الاختبارات",
     embeds: [
       {
         title: "📋 نموذج اختبار إلكتروني جديد",
-        color: 7043327,
+        color: isAccepted ? 3066993 : 15158332,
         fields: fields,
         timestamp: new Date().toISOString()
       }
@@ -175,9 +220,19 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
       throw new Error("فشل الإرسال");
     }
 
-    // إخفاء الاختبار وإظهار صفحة التأكيد
     document.getElementById("quiz-view").style.display = "none";
-    document.getElementById("confirmation-view").style.display = "flex";
+    const confirmView = document.getElementById("confirmation-view");
+    confirmView.style.display = "flex";
+
+    document.getElementById("confirm-icon").textContent = isAccepted ? "🎉" : "❌";
+    document.getElementById("confirm-title").textContent = isAccepted
+      ? "مبروك! تم قبولك تلقائياً"
+      : "نعتذر، لم يتم قبولك هذه المرة";
+    document.getElementById("confirm-message").textContent = isAccepted
+      ? "لقد أجبت على جميع الأسئلة بشكل صحيح وتم إرسال نتيجة قبولك إلى الإدارة."
+      : "حصلت على أقل من 11 إجابة صحيحة، وتم إرسال نتيجة الاختبار إلى الإدارة.";
+    document.getElementById("result-summary").textContent = `نتيجتك: ${score} من ${totalQuestions}`;
+
     window.scrollTo(0, 0);
 
   } catch (error) {
