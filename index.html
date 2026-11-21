@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -18,11 +17,22 @@ input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid
 .question{background:#151824;border:1px solid #34394b;border-radius:12px;padding:16px;margin:12px 0}
 .choices{display:flex;gap:12px;margin-top:10px}
 .choices label{flex:1;display:flex;align-items:center;gap:8px;border:1px solid #34394b;border-radius:9px;padding:10px;cursor:pointer;margin:0}
-button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-radius:10px;font:bold 16px Tahoma;cursor:pointer}
+button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-radius:10px;font:bold 16px Tahoma;cursor:pointer;transition:0.2s}
+button:disabled{opacity:0.6;cursor:not-allowed}
+
+/* تنسيقات صفحة التأكيد المدمجة */
+#confirmation-view{display:none;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}
+.confirm-card{width:min(500px,100%);background:#1b1e29;border:1px solid #34394b;border-top:4px solid #6b78ff;border-radius:20px;padding:35px 22px}
+.icon{font-size:60px}
+.confirm-card h1{font-size:27px}
+.confirm-card p{font-size:18px;line-height:2}
+.small{color:#b7bdd0;font-size:14px}
 </style>
 </head>
 <body>
-<main>
+
+<!-- الصفحة الأولى: الاختبار -->
+<main id="quiz-view">
 <header>
 <h1>الاختبار الإلكتروني</h1>
 <p>أكمل بياناتك وأجب عن جميع الأسئلة.</p>
@@ -50,29 +60,41 @@ button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-ra
 <div id="questions"></div>
 </section>
 
-<button type="submit">إرسال الإجابات</button>
+<button type="submit" id="submitBtn">إرسال الإجابات</button>
 </form>
 </main>
 
+<!-- الصفحة الثانية: شاشة التأكيد -->
+<div id="confirmation-view">
+<div class="confirm-card">
+<div class="icon">✅</div>
+<h1>تم إرسال اختبارك إلى الإدارة</h1>
+<p>يرجى الانتظار حتى يتم الرد عليك من الإدارة.</p>
+<p class="small">شكرًا لك على إكمال الاختبار ❤️</p>
+</div>
+</div>
+
 <script>
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1573817844888506579/GEnIMN4yOgd1lu4bfcCJQRfKha0D4p8Y5HiJgL9qJIpyiVOvXiqkng9jDw2ILeebs-fu";
+
 const questions = [
-"هل يسمح لك قتل مسعف؟",
-"هل يسمح لك إهانة الجثة؟",
-"هل يسمح لك الاعتداء على البت (المدني)؟",
-"هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
-"لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
-"إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
-"هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
-"في حال كنت في فايت وواجهك ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
-"هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
-"هل يسمح لك الكذب داخل الرول؟",
-"هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
+  "هل يسمح لك قتل مسعف؟",
+  "هل يسمح لك إهانة الجثة؟",
+  "هل يسمح لك الاعتداء على البت (المدني)؟",
+  "هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
+  "لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
+  "إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
+  "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
+  "في حال كنت في فايت وواجهك ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
+  "هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
+  "هل يسمح لك الكذب داخل الرول؟",
+  "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
 ];
 
 const root = document.getElementById("questions");
 
 questions.forEach((question, index) => {
-  const number = index + 2;
+  const number = index + 1;
   const div = document.createElement("div");
   div.className = "question";
 
@@ -83,7 +105,7 @@ questions.forEach((question, index) => {
   const choices = document.createElement("div");
   choices.className = "choices";
 
-  ["صح", "خطأ"].forEach((answer, i) => {
+  ["صح", "خطأ"].forEach((answer) => {
     const label = document.createElement("label");
     const radio = document.createElement("input");
     radio.type = "radio";
@@ -100,31 +122,69 @@ questions.forEach((question, index) => {
   root.appendChild(div);
 });
 
-document.getElementById("quiz").addEventListener("submit", function(event) {
+document.getElementById("quiz").addEventListener("submit", async function(event) {
   event.preventDefault();
-
   if (!this.reportValidity()) return;
 
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "جاري الإرسال...";
+
   const formData = new FormData(this);
-  const submission = {
-    gameUser: formData.get("gameUser"),
-    realName: formData.get("realName"),
-    age: formData.get("age"),
-    discordUser: formData.get("discordUser"),
-    answers: questions.map((question, index) => ({
-      question,
-      answer: formData.get(`q${index + 2}`)
-    }))
+  const gameUser = formData.get("gameUser");
+  const realName = formData.get("realName");
+  const age = formData.get("age");
+  const discordUser = formData.get("discordUser");
+
+  const fields = [
+    { name: "🎮 يوزر اللعبة", value: gameUser, inline: true },
+    { name: "👤 الاسم الحقيقي", value: realName, inline: true },
+    { name: "🎂 العمر", value: age, inline: true },
+    { name: "💬 يوزر الديسكورد", value: discordUser, inline: false }
+  ];
+
+  questions.forEach((question, index) => {
+    const ans = formData.get(`q${index + 1}`);
+    fields.push({
+      name: `س${index + 1}: ${question}`,
+      value: `**الإجابة:** ${ans}`,
+      inline: false
+    });
+  });
+
+  const payload = {
+    username: "نظام الاختبارات",
+    embeds: [
+      {
+        title: "📋 نموذج اختبار إلكتروني جديد",
+        color: 7043327,
+        fields: fields,
+        timestamp: new Date().toISOString()
+      }
+    ]
   };
 
   try {
-    sessionStorage.setItem("quizSubmission", JSON.stringify(submission));
-  } catch (error) {
-    alert("تعذر تجهيز الطلب. يرجى المحاولة مرة أخرى.");
-    return;
-  }
+    const response = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-  window.location.href = "confirmation.html";
+    if (!response.ok) {
+      throw new Error("فشل الإرسال");
+    }
+
+    // إخفاء الاختبار وإظهار صفحة التأكيد
+    document.getElementById("quiz-view").style.display = "none";
+    document.getElementById("confirmation-view").style.display = "flex";
+    window.scrollTo(0, 0);
+
+  } catch (error) {
+    alert("حدث خطأ أثناء إرسال الإجابات، تأكد من اتصال الإنترنت وحاول مرة أخرى.");
+    btn.disabled = false;
+    btn.textContent = "إرسال الإجابات";
+  }
 });
 </script>
 </body>
