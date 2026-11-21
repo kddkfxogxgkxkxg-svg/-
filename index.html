@@ -21,7 +21,6 @@ input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid
 button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-radius:10px;font:bold 16px Tahoma;cursor:pointer;transition:0.2s}
 button:disabled{opacity:0.6;cursor:not-allowed}
 
-/* تنسيقات صفحة التأكيد المدمجة */
 #confirmation-view{display:none;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}
 .confirm-card{width:min(520px,100%);background:#1b1e29;border:1px solid #34394b;border-top:4px solid #6b78ff;border-radius:20px;padding:35px 22px}
 .icon{font-size:60px}
@@ -33,7 +32,6 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 </head>
 <body>
 
-<!-- الصفحة الأولى: الاختبار -->
 <main id="quiz-view">
 <header>
 <h1>الاختبار الإلكتروني</h1>
@@ -53,9 +51,9 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 <label for="age">عمرك الحقيقي</label>
 <input id="age" name="age" type="number" min="1" max="120" required>
 
-<label for="discordUser">يوزرك في الديسكورد (يفضل وضع الـ ID للمنشن)</label>
+<label for="discordUser">يوزرك في الديسكورد (يفضل وضع الـ ID للمнشن)</label>
 <input id="discordUser" name="discordUser" type="text" placeholder="مثال: 123456789012345678" required>
-<span class="hint">إذا كتبت رقم الـ ID الخاص بحسابك في ديسكورد سيتم عمل منشن لك مباشرة.</span>
+<span class="hint">إذا كتبت رقم الـ ID سيتم عمل منشن لحسابك مباشرة.</span>
 </section>
 
 <section class="card">
@@ -67,7 +65,6 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 </form>
 </main>
 
-<!-- الصفحة الثانية: شاشة التأكيد -->
 <div id="confirmation-view">
 <div class="confirm-card">
 <div class="icon" id="confirm-icon">✅</div>
@@ -81,7 +78,6 @@ button:disabled{opacity:0.6;cursor:not-allowed}
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1573817844888506579/GEnIMN4yOgd1lu4bfcCJQRfKha0D4p8Y5HiJgL9qJIpyiVOvXiqkng9jDw2ILeebs-fu";
 
-// الأسئلة والإجابة الصحيحة لكل سؤال (يمكنك تعديل الإجابات الصحيحة حسب قواعد سيرفرك)
 const quizData = [
   { question: "هل يسمح لك قتل مسعف؟", correct: "خطأ" },
   { question: "هل يسمح لك إهانة الجثة؟", correct: "خطأ" },
@@ -162,39 +158,34 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
   let score = 0;
   const totalQuestions = quizData.length;
 
-  const fields = [
-    { name: "👤 الاسم الحقيقي", value: realName, inline: true },
-    { name: "🎮 يوزر اللعبة", value: gameUser, inline: true },
-    { name: "🎂 العمر", value: age, inline: true },
-    { name: "💬 يوزر الديسكورد", value: discordInfo.mention, inline: false }
-  ];
-
+  let answersText = "";
   quizData.forEach((item, index) => {
     const userAnswer = formData.get(`q${index + 1}`);
     const isCorrect = userAnswer === item.correct;
     if (isCorrect) score++;
-
-    fields.push({
-      name: `س${index + 1}: ${item.question}`,
-      value: `**الإجابة:** ${userAnswer} ${isCorrect ? "✅" : "❌"}`,
-      inline: false
-    });
+    answersText += `س${index+1}: ${userAnswer} ${isCorrect ? "✅" : "❌"}\n`;
   });
 
   const isAccepted = score === totalQuestions;
-  const statusText = isAccepted
-    ? "🟢 مقبول تلقائياً (الدرجة كاملة 11/11)"
-    : `🔴 مرفوض تلقائياً (الدرجة ${score}/${totalQuestions})`;
+  const statusText = isAccepted ? "🟢 مقبول" : "🔴 مرفوض";
 
-  const dmDecisionMessage = isAccepted
-    ? `مبروك ${discordInfo.mention}، تم قبولك في الاختبار بنجاح (${score}/${totalQuestions}).`
-    : `نعتذر ${discordInfo.mention}، لم يتم قبولك في الاختبار (${score}/${totalQuestions}). يمكنك المحاولة مرة أخرى لاحقاً.`;
-
-  fields.push(
-    { name: "📊 النتيجة", value: `**${score} / ${totalQuestions}**`, inline: true },
-    { name: "📌 حالة التقديم", value: statusText, inline: true },
-    { name: "✉️ رسالة الخاص التلقائية", value: dmDecisionMessage, inline: false }
-  );
+  const fields = [
+    { 
+      name: "📋 معلومات المتقدم", 
+      value: `**اللعبة:** ${gameUser} | **الاسم:** ${realName}\n**العمر:** ${age} | **الديسكورد:** ${discordInfo.mention}`, 
+      inline: false 
+    },
+    { 
+      name: "📝 الإجابات", 
+      value: answersText, 
+      inline: false 
+    },
+    { 
+      name: "📊 النتيجة النهائية", 
+      value: `**${score} / ${totalQuestions}** (${statusText})`, 
+      inline: false 
+    }
+  ];
 
   const payload = {
     content: discordInfo.userId ? `<@${discordInfo.userId}>` : "",
@@ -216,27 +207,22 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      throw new Error("فشل الإرسال");
-    }
+    if (!response.ok) throw new Error("فشل الإرسال");
 
     document.getElementById("quiz-view").style.display = "none";
     const confirmView = document.getElementById("confirmation-view");
     confirmView.style.display = "flex";
 
     document.getElementById("confirm-icon").textContent = isAccepted ? "🎉" : "❌";
-    document.getElementById("confirm-title").textContent = isAccepted
-      ? "مبروك! تم قبولك تلقائياً"
-      : "نعتذر، لم يتم قبولك هذه المرة";
-    document.getElementById("confirm-message").textContent = isAccepted
-      ? "لقد أجبت على جميع الأسئلة بشكل صحيح وتم إرسال نتيجة قبولك إلى الإدارة."
-      : "حصلت على أقل من 11 إجابة صحيحة، وتم إرسال نتيجة الاختبار إلى الإدارة.";
+    document.getElementById("confirm-title").textContent = isAccepted ? "مبروك! تم قبولك" : "نعتذر، لم يتم قبولك";
+    document.getElementById("confirm-message").textContent = isAccepted 
+      ? "تم التحقق من إجاباتك وإرسال النتيجة للإدارة." 
+      : "لم تستوفِ الدرجة المطلوبة كاملة.";
     document.getElementById("result-summary").textContent = `نتيجتك: ${score} من ${totalQuestions}`;
 
-    window.scrollTo(0, 0);
-
+    window.scrollTo(0, 赢`);
   } catch (error) {
-    alert("حدث خطأ أثناء إرسال الإجابات، تأكد من اتصال الإنترنت وحاول مرة أخرى.");
+    alert("حدث خطأ أثناء الإرسال.");
     btn.disabled = false;
     btn.textContent = "إرسال الإجابات";
   }
