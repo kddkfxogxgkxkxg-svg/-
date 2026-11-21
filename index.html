@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الاختبار الإلكتروني</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#111326;color:#f5f6ff;font-family:Tahoma,Arial,sans-serif;line-height:1.8}
+main{width:min(760px,92%);margin:30px auto}
+header,.card{background:#1b1e29;border:1px solid #34394b;border-radius:16px;padding:22px;margin-bottom:16px}
+header{border-top:4px solid #6b78ff}
+h1{margin-top:0}
+label{display:block;margin:12px 0 5px;font-weight:bold}
+input{max-width:100%;font:inherit}
+input[type="text"],input[type="number"]{width:100%;padding:12px;border:1px solid #34394b;border-radius:9px;background:#11141e;color:white}
+.question{background:#151824;border:1px solid #34394b;border-radius:12px;padding:16px;margin:12px 0}
+.choices{display:flex;gap:12px;margin-top:10px}
+.choices label{flex:1;display:flex;align-items:center;gap:8px;border:1px solid #34394b;border-radius:9px;padding:10px;cursor:pointer;margin:0}
+button{width:100%;padding:14px;background:#6b78ff;color:white;border:0;border-radius:10px;font:bold 16px Tahoma;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>الاختبار الإلكتروني</h1>
+<p>أكمل بياناتك وأجب عن جميع الأسئلة.</p>
+</header>
+
+<form id="quiz">
+<section class="card">
+<h2>البيانات الشخصية</h2>
+
+<label for="gameUser">يوزرك باللعبة</label>
+<input id="gameUser" name="gameUser" type="text" required>
+
+<label for="realName">اسمك الحقيقي</label>
+<input id="realName" name="realName" type="text" required>
+
+<label for="age">عمرك الحقيقي</label>
+<input id="age" name="age" type="number" min="1" max="120" required>
+
+<label for="discordUser">يوزرك في الديسكورد</label>
+<input id="discordUser" name="discordUser" type="text" required>
+</section>
+
+<section class="card">
+<h2>أسئلة الاختبار</h2>
+<div id="questions"></div>
+</section>
+
+<button type="submit">إرسال الإجابات</button>
+</form>
+</main>
+
+<script>
+const questions = [
+"هل يسمح لك قتل مسعف؟",
+"هل يسمح لك إهانة الجثة؟",
+"هل يسمح لك الاعتداء على البت (المدني)؟",
+"هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
+"لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
+"إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
+"هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
+"في حال كنت في فايت وواجهك ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
+"هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
+"هل يسمح لك الكذب داخل الرول؟",
+"هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
+];
+
+const root = document.getElementById("questions");
+
+questions.forEach((question, index) => {
+  const number = index + 2;
+  const div = document.createElement("div");
+  div.className = "question";
+
+  const title = document.createElement("strong");
+  title.textContent = `السؤال ${number}: ${question}`;
+  div.appendChild(title);
+
+  const choices = document.createElement("div");
+  choices.className = "choices";
+
+  ["صح", "خطأ"].forEach((answer, i) => {
+    const label = document.createElement("label");
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = `q${number}`;
+    radio.value = answer;
+    radio.required = true;
+
+    label.appendChild(radio);
+    label.appendChild(document.createTextNode(answer));
+    choices.appendChild(label);
+  });
+
+  div.appendChild(choices);
+  root.appendChild(div);
+});
+
+document.getElementById("quiz").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  if (!this.reportValidity()) return;
+
+  const formData = new FormData(this);
+  const submission = {
+    gameUser: formData.get("gameUser"),
+    realName: formData.get("realName"),
+    age: formData.get("age"),
+    discordUser: formData.get("discordUser"),
+    answers: questions.map((question, index) => ({
+      question,
+      answer: formData.get(`q${index + 2}`)
+    }))
+  };
+
+  try {
+    sessionStorage.setItem("quizSubmission", JSON.stringify(submission));
+  } catch (error) {
+    alert("تعذر تجهيز الطلب. يرجى المحاولة مرة أخرى.");
+    return;
+  }
+
+  window.location.href = "confirmation.html";
+});
+</script>
+</body>
+</html>
