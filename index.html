@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,156 +6,182 @@
 <title>الاختبار الإلكتروني</title>
 
 <style>
+:root {
+  --bg: #10121a;
+  --panel: #1b1e29;
+  --line: #34394b;
+  --accent: #6b78ff;
+  --text: #f5f6ff;
+  --muted: #b7bdd0;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  padding: 20px;
-  background: #11131d;
-  color: #ffffff;
+  background: linear-gradient(145deg, #111326, #171b2b);
+  color: var(--text);
   font-family: Tahoma, Arial, sans-serif;
   line-height: 1.8;
 }
 
-.container {
-  max-width: 700px;
-  margin: auto;
+main {
+  width: min(760px, 92%);
+  margin: 32px auto 60px;
 }
 
-.card {
-  background: #1d202b;
-  border: 1px solid #373b4c;
-  border-radius: 16px;
+.hero, .card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
   padding: 22px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
-h1, h2 {
-  margin-top: 0;
+.hero {
+  border-top: 4px solid var(--accent);
 }
 
 h1 {
-  color: #8993ff;
-  text-align: center;
+  font-size: 1.65rem;
+  margin: 0 0 8px;
 }
 
-p {
-  color: #c6c9d5;
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0;
 }
 
 label {
   display: block;
-  margin-top: 12px;
+  margin: 12px 0 5px;
+  font-weight: 700;
 }
 
-input[type="text"],
-input[type="number"] {
+input {
   width: 100%;
-  padding: 12px;
-  margin-top: 5px;
-  background: #11131d;
-  color: white;
-  border: 1px solid #41465a;
-  border-radius: 9px;
-  font-size: 16px;
+  padding: 12px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #11141e;
+  color: var(--text);
+  font: inherit;
 }
 
 .question {
-  padding: 16px 0;
-  border-bottom: 1px solid #373b4c;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin: 12px 0;
+  background: #151824;
 }
 
-.question:last-child {
-  border-bottom: none;
-}
-
-.options {
+.choices {
   display: flex;
   gap: 12px;
   margin-top: 12px;
 }
 
-.options label {
+.choices label {
   flex: 1;
-  background: #292d3b;
-  border: 1px solid #41465a;
-  border-radius: 9px;
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   cursor: pointer;
 }
 
-.options input {
-  accent-color: #8993ff;
+.choices input {
+  width: auto;
+  accent-color: var(--accent);
 }
 
 button {
   width: 100%;
+  border: 0;
+  border-radius: 12px;
   padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background: #727fff;
+  background: var(--accent);
   color: white;
-  font-size: 17px;
-  font-weight: bold;
+  font: 700 1rem Tahoma, Arial, sans-serif;
   cursor: pointer;
 }
 
-button:hover {
-  background: #5968f0;
-}
-
-#result {
-  display: none;
-  margin-top: 18px;
-  padding: 18px;
-  background: #1d202b;
-  border: 1px solid #727fff;
-  border-radius: 12px;
-  text-align: center;
-}
-
 .small {
-  font-size: 13px;
-  color: #aeb4c7;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+#confirmation {
+  display: none;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--accent);
+  border-radius: 18px;
+  padding: 28px 22px;
+  margin-top: 20px;
+}
+
+#confirmation h1 {
+  margin-bottom: 12px;
+}
+
+#confirmation p {
+  margin: 8px 0;
+}
+
+.success-icon {
+  font-size: 55px;
+  margin-bottom: 10px;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
 
-  <section class="card">
+<main>
+
+  <header class="hero">
     <h1>الاختبار الإلكتروني</h1>
-    <p style="text-align:center">
-      يرجى تعبئة البيانات والإجابة عن جميع الأسئلة.
-    </p>
+    <p class="muted">أكمل بياناتك ثم أجب عن جميع الأسئلة.</p>
+  </header>
+
+  <section id="confirmation" role="status" aria-live="polite">
+    <div class="success-icon">✅</div>
+    <h1>تم إرسال طلبك</h1>
+    <p>انتظر رد من الإدارة.</p>
+    <p class="small">شكرًا لك على إكمال الاختبار ❤️</p>
   </section>
 
-  <form id="quizForm">
+  <form id="quiz">
 
     <section class="card">
-      <h2>بيانات المتقدم</h2>
+      <h2>البيانات الشخصية</h2>
 
       <label for="gameUser">يوزرك باللعبة</label>
-      <input id="gameUser" name="gameUser"
-             type="text" required maxlength="80">
+      <input id="gameUser" name="gameUser" required maxlength="80">
 
       <label for="realName">اسمك الحقيقي</label>
-      <input id="realName" name="realName"
-             type="text" required maxlength="100">
+      <input id="realName" name="realName" required maxlength="100">
 
       <label for="age">عمرك الحقيقي</label>
-      <input id="age" name="age" type="number"
-             min="1" max="120" required>
+      <input id="age" name="age" type="number" min="1" max="120" required>
 
       <label for="discordUser">يوزرك في الديسكورد</label>
-      <input id="discordUser" name="discordUser"
-             type="text" required maxlength="100">
+      <input id="discordUser" name="discordUser" required maxlength="100">
 
-      <p>(بالتوفيق ❤️)</p>
+      <p class="small">بالتوفيق ❤️</p>
     </section>
 
     <section class="card">
@@ -164,18 +189,11 @@ button:hover {
       <div id="questions"></div>
     </section>
 
-    <button type="submit">إرسال الإجابات</button>
-
-    <div id="result" role="status"></div>
+    <button id="submitBtn" type="submit">إرسال الإجابات</button>
 
   </form>
 
-  <p class="small">
-    ملاحظة: إرسال النتائج إلى ديسكورد يحتاج ربط الموقع
-    بخادم وبوت آمن.
-  </p>
-
-</div>
+</main>
 
 <script>
 const questions = [
@@ -183,109 +201,86 @@ const questions = [
   "هل يسمح لك إهانة الجثة؟",
   "هل يسمح لك الاعتداء على البت (المدني)؟",
   "هل يسمح لك أخذ معلومات من بث أو فيديو يوتيوب؟",
-  "لو شخص قيدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
+  "لو شخص قيّدك بالكامل، هل تقدر تتكلم بالجوال وتطلب مساعدة؟",
   "إن رأيت شخصًا يستعمل ثغرة، ما التصرف الصحيح تجاهه؟",
-  "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (انتحال صفة)؟",
+  "هل يسمح لمجرم أو موظف ارتداء لبس عسكري (تمثيل/انتحال صفة)؟",
   "في حال كنت في فايت وواجهت ثلاثة هددوك ورفعوا عليك السلاح وأنت ما معك سلاح، هل يحق لك تقاوم؟",
   "هل يسمح استغلال خدمات الجوال مثل طلب تاكسي بهدف الخطف أو القتل؟",
   "هل يسمح لك الكذب داخل الرول؟",
   "هل يسمح لك مداهمة مقر عصابة أو مركز شرطة من دون إعلان؟"
 ];
 
-// الإجابات الحالية افتراضية.
-// غيّرها إلى true إذا كانت الإجابة الصحيحة "صح".
-const correctAnswers = [
-  false, false, false, false, false,
-  false, false, false, false, false, false
-];
-
-const questionsContainer = document.getElementById("questions");
+const questionsRoot = document.getElementById("questions");
 
 questions.forEach((question, index) => {
   const number = index + 2;
+  const item = document.createElement("div");
 
-  const div = document.createElement("div");
-  div.className = "question";
+  item.className = "question";
 
   const title = document.createElement("strong");
   title.textContent = `السؤال ${number}: ${question}`;
-  div.appendChild(title);
+  item.appendChild(title);
 
-  const options = document.createElement("div");
-  options.className = "options";
+  const choices = document.createElement("div");
+  choices.className = "choices";
 
   [
-    { text: "صح", value: "true" },
-    { text: "خطأ", value: "false" }
-  ].forEach(option => {
+    { value: "true", text: "صح" },
+    { value: "false", text: "خطأ" }
+  ].forEach(choice => {
     const label = document.createElement("label");
     const radio = document.createElement("input");
 
     radio.type = "radio";
     radio.name = `q${number}`;
-    radio.value = option.value;
+    radio.value = choice.value;
     radio.required = true;
 
     label.appendChild(radio);
-    label.appendChild(document.createTextNode(" " + option.text));
-    options.appendChild(label);
+    label.appendChild(document.createTextNode(choice.text));
+    choices.appendChild(label);
   });
 
-  div.appendChild(options);
-  questionsContainer.appendChild(div);
+  item.appendChild(choices);
+  questionsRoot.appendChild(item);
 });
 
-document.getElementById("quizForm").addEventListener(
-  "submit",
-  function(event) {
-    event.preventDefault();
+document.getElementById("quiz").addEventListener("submit", function(event) {
+  event.preventDefault();
 
-    if (!this.reportValidity()) return;
-
-    const formData = new FormData(this);
-    let score = 0;
-    const answers = [];
-
-    questions.forEach((question, index) => {
-      const number = index + 2;
-      const answer = formData.get(`q${number}`) === "true";
-      const isCorrect = answer === correctAnswers[index];
-
-      if (isCorrect) score++;
-
-      answers.push({
-        number,
-        question,
-        answer: answer ? "صح" : "خطأ",
-        correct: isCorrect
-      });
-    });
-
-    const submission = {
-      gameUser: formData.get("gameUser"),
-      realName: formData.get("realName"),
-      age: formData.get("age"),
-      discordUser: formData.get("discordUser"),
-      answers,
-      score,
-      total: questions.length,
-      submittedAt: new Date().toISOString()
-    };
-
-    const result = document.getElementById("result");
-    result.style.display = "block";
-    result.textContent =
-      `تم إنهاء الاختبار! نتيجتك ${score} من ${questions.length}. ` +
-      "هذه معاينة محلية؛ لم تُرسل النتيجة إلى ديسكورد.";
-
-    console.log("بيانات الاختبار:", submission);
-
-    result.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
+  if (!this.reportValidity()) {
+    return;
   }
-);
+
+  const formData = new FormData(this);
+
+  const submission = {
+    gameUser: formData.get("gameUser"),
+    realName: formData.get("realName"),
+    age: formData.get("age"),
+    discordUser: formData.get("discordUser"),
+    answers: questions.map((question, index) => ({
+      question: question,
+      answer: formData.get(`q${index + 2}`) === "true" ? "صح" : "خطأ"
+    })),
+    submittedAt: new Date().toISOString()
+  };
+
+  // عرض بيانات الطلب في وحدة التحكم فقط.
+  // يلزم ربط خادم أو بوت ديسكورد لإرسال الطلب فعليًا للإدارة.
+  console.log("Quiz submission:", submission);
+
+  document.getElementById("quiz").style.display = "none";
+  document.querySelector(".hero").style.display = "none";
+  document.getElementById("confirmation").style.display = "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
 </script>
+
 </body>
 </html>
