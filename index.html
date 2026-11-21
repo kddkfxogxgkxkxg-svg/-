@@ -333,9 +333,7 @@ function toggleMenu() {
 }
 
 function closeMenu() {
-  const menu = document.getElementById('dropdownMenu');
-  const btn = document.getElementById('menuBtn');
-  menu.classList.remove('show');
+  document.getElementById('dropdownMenu').classList.remove('show');
   btn.classList.remove('active');
   btn.textContent = '☰';
 }
