@@ -209,11 +209,6 @@ button.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
 @keyframes bounce{to{transform:translateY(-10px);}}
 .confirm-card h1{font-size:28px;margin:15px 0}
 .confirm-card p{font-size:17px;line-height:1.9}
-.status-box{
-  margin-top:20px;padding:16px;border-radius:14px;
-  background:#0e121b;border:1px solid var(--border-color);
-  font-size:17px;font-weight:bold;color:var(--primary);
-}
 </style>
 </head>
 <body>
@@ -296,10 +291,8 @@ button.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
 <section id="confirmation-view" class="page-view">
   <div class="confirm-card">
     <div class="icon" id="confirm-icon">🎉</div>
-    <h1 id="confirm-title">تم إرسال اختبارك إلى الإدارة</h1>
-    <p id="confirm-message">يرجى الانتظار حتى يتم الرد عليك من الإدارة.</p>
-    <div class="status-box" id="result-summary"></div>
-    <p style="color:var(--text-muted);font-size:15px;margin-top:20px">شكرًا لك على إكمال الاختبار ❤️</p>
+    <h1>تم إرسال اختبارك إلى الإدارة</h1>
+    <p>شكرًا لك على إكمال الاختبار. سيتم مراجعة إجاباتك والرد عليك في أقرب وقت.</p>
   </div>
 </section>
 
@@ -447,12 +440,6 @@ document.getElementById("quiz").addEventListener("submit", async function(event)
     if (!response.ok) throw new Error("فشل الإرسال");
 
     showPage('confirmation-view');
-    document.getElementById("confirm-icon").textContent = isAccepted ? "🎉" : "❌";
-    document.getElementById("confirm-title").textContent = isAccepted ? "مبروك! تم قبولك" : "نعتذر، لم يتم قبولك";
-    document.getElementById("confirm-message").textContent = isAccepted 
-      ? "تم التحقق من إجاباتك وإرسال النتيجة للإدارة." 
-      : "لم تستوفِ الدرجة المطلوبة كاملة.";
-    document.getElementById("result-summary").textContent = `نتيجتك: ${score} من ${totalQuestions}`;
   } catch (error) {
     alert("حدث خطأ أثناء الإرسال، تأكد من اتصال الإنترنت وحاول مرة أخرى.");
     btn.disabled = false;
